@@ -1,0 +1,709 @@
+import React, { useState } from 'react'
+import './Dashboard.css'
+import {Chart, Tooltip,Title,ArcElement,Legend} from 'chart.js'
+import { Doughnut } from 'react-chartjs-2';
+import { useEffect } from 'react';
+
+
+
+Chart.register(
+  Tooltip,Title,ArcElement,Legend
+);
+
+const Dashboard = () => {
+
+//     var connection = new WebSocket('ws://127.0.0.1:4444');
+//    // function getSocket()
+//     //{
+//         connection.onopen = function () {
+//             console.log('Connected!');
+//             connection.send('Ping');
+//              // Send the message 'Ping' to the server
+//         };
+        
+//         // Log errors
+//         connection.onerror = function (error) {
+//             console.log('WebSocket Error ' + error);
+//         };
+        
+//         // Log messages from the server
+//         connection.onmessage = function (e) {
+//             console.log('Server: ' + e.data);
+//             var mydata = e.data;
+//             var parse_data = JSON.parse(mydata);
+//             console.log('parse_data: ' + parse_data);
+
+//             console.log('parse_data: ' + parse_data.total_count);
+//             console.log('parse_data: ' + parse_data.odper);
+
+//             document.getElementById("housecount").innerHTML= parse_data.total_count;
+//             document.getElementById("housepercentage").innerHTML=parse_data.inoffice+'%';
+//             const label1=['Od Persons','Absent','Leave','Inoffice','Outside'];
+//             const data2=[parse_data.odper,parse_data.abper,parse_data.leave,parse_data.inoffice,parse_data.outside];
+//             settotal_availdata({datasets: [{
+//                 data: data2,backgroundColor:[
+//                     'rgba(0, 130, 130,1)','rgba(0, 130, 130, 0.3)', 'Yellow', 'Green', 'Purple', 'Orange','violet','pink','brown','cyan'
+//                 ]
+//             },
+            
+//         ],
+//             labels: label1});
+
+//             connection.send('pong');
+            
+//         };
+// Socket for 1 grpah
+const socket = new WebSocket('ws://140.238.241.231:8282');
+ 
+socket.addEventListener('open', function (event) {
+ 
+    socket.send('Connection Established');
+ 
+});
+ 
+ 
+ 
+socket.addEventListener('message', function (e) {
+ 
+    console.log(e.data);
+    socket.send('pong');
+     
+                    var mydata = e.data;
+                    var b = mydata.replace(/'/g, '"');
+                    var parse_data = JSON.parse(b);
+                    console.log('parse_data: ' + parse_data);
+        
+                    console.log('parse_data: ' + parse_data.total_count);
+                    console.log('parse_data: ' + parse_data.odper);
+        
+                    document.getElementById("housecount").innerHTML= parse_data.total_count;
+                    document.getElementById("housepercentage").innerHTML=parse_data.inoffice+'%';
+                    const label1=['Od Persons','Absent','Leave','Inoffice','Outside'];
+                    const data2=[parse_data.odper,parse_data.abper,parse_data.leave,parse_data.inoffice,parse_data.outside];
+                    settotal_availdata({datasets: [{
+                        data: data2,backgroundColor:[
+                            'rgba(0, 130, 130,1)','rgb(75, 192, 192)',  'rgb(54, 162, 235)', 'rgb(255, 99, 132)', 'rgb(255, 205, 86)', 'Orange','violet','pink'
+                        ]
+                    },
+                    
+                ],
+                    labels: label1});
+                    console.log('parse_data1111111111: ' + parse_data.filled_employees);
+                    console.log('parse_data222222222: ' + parse_data.not_filled_count);
+                    const label111=['filled_employees','not_filled_count'];
+                    var employeecount=parse_data.total_employees
+                    // alert(employeecount)
+                    const data111=[parse_data.filled_employees,10-parse_data.not_filled_count];
+                   
+                    // const data111=[parse_data.filled_employees,totalemployee-parse_data.filled_employees];
+                   
+
+                    setEmp_ttefill({datasets: [{
+                        data: data111,backgroundColor:[
+                            'rgba(0, 130, 130,1)','rgb(75, 192, 192)'
+                        ]
+                    },
+                    
+                ],
+                    labels: label111});
+ 
+});
+ 
+
+    const[emp_availdaata,setemp_availdaata]=useState({
+        datasets: [{
+          data: [100, 0],backgroundColor:[
+            'rgba(0, 130, 130,1)',
+            'rgba(0, 130, 130,0.1)',
+          ]
+      },
+    ],
+      labels: [
+          'Total_Availability_Percentange',
+          'Total_Unavailability_Percentange',
+        //   'Blue'
+      ],
+     
+    
+    })
+
+    const[emp_ttefill,setEmp_ttefill]=useState({
+        datasets: [{
+          data: [50, 50],backgroundColor:[
+            'rgba(0, 130, 130,1)',
+            'rgba(0, 130, 130,0.1)',
+          ]
+      },
+    ],
+      labels: [
+          'Total_FillTTE_Percentange',
+          'Total_Unablettefill_Percentange',
+        //   'Blue'
+      ],
+     
+    
+    })
+      
+const [total_availdata, settotal_availdata] = useState({
+  datasets: [
+    {
+      data: [100, 0],
+      backgroundColor: [
+        'rgba(0, 130, 130,1)',
+        'rgba(0, 130, 130,0.1)',
+      ],
+    },
+  ],
+  labels: [
+    'Total_In_House_Count',
+    'Total_Out_House_Count',
+  ],
+  options: {
+    title: {
+      display: true,
+      text: 'chart',
+    },
+    legend: {
+      position: 'bottom',
+    },
+  },
+});
+
+      
+    //setInterval(getSocket, 5000); 
+    
+    
+      
+    const[data21,setData21]=useState({
+        datasets: [{
+          data: [50, 50],backgroundColor:[
+            'rgba(0, 130, 130,1)',
+            'rgba(0, 130, 130,0.1)',
+          ]
+      },
+    ],
+      labels: [
+        'Total_Inside_House',
+        'Total_Outside_House',
+      
+        //   'Blue'
+      ],
+     
+    })
+    
+   
+    
+   
+    const [selectValue, setSelectValue] = React.useState("");
+    
+    const socket1 = new WebSocket('ws://140.238.241.231:9090');
+ 
+    socket1.addEventListener('open', function (event) {
+     
+        socket1.send('Connection Established');
+     
+    });
+     
+     
+     
+    socket1.addEventListener('message', function (event) {
+     var parse_socke_data=JSON.parse(event.data)
+    //   alert(parse_socke_data.employee_name)
+    //   alert(parse_socke_data.total_working_hours)
+     var time_working_hours=(parse_socke_data.total_working_hours).substring(0, 8)
+    //   alert(time_working_hours)
+     document.getElementById("showtime").innerHTML=(time_working_hours);
+    //  alert(parse_socke_data.total_availability)
+     var employee_availability=parse_socke_data.total_availability;
+        console.log(event.data);
+        document.getElementById("center").innerHTML=parse_socke_data.total_availability+"%";
+        const label11=['Total Insidehouse','Total Outsidehouse'];
+        const data1=[employee_availability,100-employee_availability]; 
+        //  alert("okkkkkkkkkkk")
+                setemp_availdaata({datasets: [{
+                   
+                    data: data1,backgroundColor:[
+                        'rgba(0, 130, 130,1)','rgba(0, 130, 130, 0.1)', 'Yellow', 'Green', 'Purple', 'Orange','violet','pink','brown','cyan'
+                    ]
+                },
+                
+            ],
+                labels: label11});
+               
+                setemp_availdaata({datasets: [{
+                   
+                    data: data1,backgroundColor:[
+                        'rgba(0, 130, 130,1)','rgba(0, 130, 130, 0.1)', 'Yellow', 'Green', 'Purple', 'Orange','violet','pink','brown','cyan'
+                    ]
+                },
+                
+            ],
+                labels: label11});
+        socket1.send('pong');
+     
+    });
+    const callEmployee = (event) => {
+        
+                // alert("okakkkkay")
+                //    post api
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                var datatttt=document.getElementById("employee").value;
+                var raw = JSON.stringify({
+                "Data": datatttt
+                });
+
+                var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+                };
+                
+                // alert(datatttt)
+                fetch("http://140.238.241.231:2000/get_data", requestOptions)
+                .then(response => response.text())
+                .then(result => console.log('--------'+result))
+                .catch(error => console.log('error', error));
+
+
+                };
+      const [employee,setEmployee]=useState([])
+     useEffect(()=>{
+        fetch('https://mindsconnect.omfysgroup.com/employeeDetails').then((data)=>data.json()).then((val)=>setEmployee(val))
+     },[])
+    //  console.log(employee,"employee")
+    const [style,setStyle]=useState("navbar-nav bg-gradient-primary sidebar sidebar-dark accordion");
+  
+   const changeStyle1=()=>{
+    if(style=='navbar-nav bg-gradient-primary sidebar sidebar-dark accordion')
+    {
+        setStyle("navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled1")
+    }
+    else{
+        setStyle("navbar-nav bg-gradient-primary sidebar sidebar-dark accordion ")
+    }
+   }
+    return (
+        
+    <div>
+     {/* <SockJsClient
+              url={SOCKET_URL}
+              topics={['/topic/app']}
+              onConnect={onConnected}
+              onDisconnect={console.log("Disconnected!")}
+              onMessage={msg => onMessageReceived(msg)}
+              debug={false}
+            />  */}
+<div id="wrapper">
+
+    {/* <!-- Sidebar --> */}
+    {/* <ul id="accordionSidebar">
+    </ul> */}
+   
+    <div id="content-wrapper" className="d-flex flex-column">
+
+        {/* <!-- Main Content --> */}
+        <div id="content">
+
+            {/* <!-- Topbar --> */}
+            <nav className="navbar navbar-expand navbar-light  topbar mb-4 static-top shadow" style={{backgroundColor:' #2196F3'}}>
+
+                {/* <!-- Sidebar Toggle (Topbar) --> */}
+                <button id="sidebarToggleTop" className="btn btn-link d-md-none rounded-circle mr-3">
+                    <i className="fa fa-bars" onClick={changeStyle1}></i>
+                </button>
+
+                {/* <!-- Topbar Search --> */}
+               
+                {/* <!-- Topbar Navbar --> */}
+                <h1 style={{fontSize: '38px',
+    color: 'black',
+    fontFamily: 'sans-serif',
+    marginLeft: '300px',color:'white'}}>Performance Indicator Dashboard</h1>
+                <ul className="navbar-nav ml-auto">
+
+                    {/* <!-- Nav Item - Search Dropdown (Visible Only XS) --> */}
+                    <li className="nav-item dropdown no-arrow d-sm-none">
+                        <a className="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i className="fas fa-search fa-fw"></i>
+                        </a>
+                       
+                        {/* <!-- Dropdown - Messages --> */}
+                        <div className="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                            aria-labelledby="searchDropdown">
+                            <form className="form-inline mr-auto w-100 navbar-search">
+                                <div className="input-group">
+                                    <input type="text" className="form-control bg-light border-0 small"
+                                        placeholder="Search for..." aria-label="Search"
+                                        aria-describedby="basic-addon2" />
+                                    <div className="input-group-append">
+                                        <button className="btn btn-primary" type="button">
+                                            <i className="fas fa-search fa-sm"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </li>
+
+                    <div className="topbar-divider d-none d-sm-block"></div>
+
+                    {/* <!-- Nav Item - User Information --> */}
+                    <li className="nav-item dropdown no-arrow">
+                        <a className="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span className="mr-2 d-none d-lg-inline  small" style={{color:'white'}}>User</span>
+                            <img className="img-profile rounded-circle"
+                                src="img/undraw_profile.svg" />
+                        </a>
+                        {/* <!-- Dropdown - User Information --> */}
+                        <div className="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                            aria-labelledby="userDropdown">
+                           
+                           
+                            <a className="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <i className="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </li>
+
+                </ul>
+
+            </nav>
+            {/* <!-- End of Topbar -->
+
+            <!-- Begin Page Content --> */}
+            <ul className="nav nav-tabs mb-3" id="myTab0" role="tablist" style={{marginLeft:'10px'}}>
+  <li className="nav-item" role="presentation">
+    <button
+      className="nav-link active"
+      id="home-tab0"
+      data-mdb-toggle="tab"
+      data-mdb-target="#home0"
+      type="button"
+      role="tab"
+      aria-controls="home"
+      aria-selected="true"
+    >
+      Organization
+    </button>
+  </li>
+  <li className="nav-item" role="presentation">
+    <button
+      className="nav-link"
+      id="profile-tab0"
+      data-mdb-toggle="tab"
+      data-mdb-target="#profile0"
+      type="button"
+      role="tab"
+      aria-controls="profile"
+      aria-selected="false"
+    >
+      Associate's
+    </button>
+  </li>
+  <li className="nav-item" role="presentation">
+    <button
+      className="nav-link"
+      id="contact-tab0"
+      data-mdb-toggle="tab"
+      data-mdb-target="#contact0"
+      type="button"
+      role="tab"
+      aria-controls="contact"
+      aria-selected="false"
+    >
+      Trainee's
+    </button>
+  </li>
+</ul>
+ <div className="container-fluid">
+                <div className="row">
+               
+                     <div className="col-xl-6 col-lg-7">
+                        <div className="card shadow mb-4">
+                            <div className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 className="m-0 font-weight-bold text-primary">In house Availability</h6>
+                                <div className="dropdown no-arrow">
+                                    <a className="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i className="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div className="card-body">
+                           
+                                <div className='row'>
+                                    <div className="col-6">
+                                        <div className="card shadow mb-2">
+                                            <div className="card-body" id="mychart">
+                                                <h6 style={{fontWeight:'bold'}}>Total associates</h6>
+                                                <div className="chart-area">
+                                                <br/>
+                                                <br />
+                                                <br />
+                                                <br />
+                                                <br />
+
+                                                <h6 id="housecount" style={{fontSize: '40px',marginLeft: '90px'}} >00</h6>
+                                                </div>
+                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-6">
+                                    <div className="card shadow mb-2">
+                                            <div className="card-body">
+                                            <h6 style={{fontWeight:'bold'}}>Real-time availability</h6>
+                                                <div className="chart-area">
+                                                <Doughnut  data={total_availdata} style={{width:'200px',height:'200px'}} />
+                                               <h1 id="housepercentage"  style={{marginTop:'-98px',fontSize:'21px',marginLeft:'100px',color:'black'}}></h1>
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-xl-6 col-lg-7">
+                        <div className="card shadow mb-4">
+                            <div className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 className="m-0 font-weight-bold text-primary"> Individual Availability</h6>
+                                <div className="dropdown no-arrow">
+                                    <a className="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i className="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div className="card-body" style={{height: '440px'}}>
+                            <form>
+                                <div className='row'>
+                                    {/* <div className='col-md-5'>
+                                        <div className="form-group">
+                                            <label htmlFor="">Select Date:</label>
+                                            <input type="datetime-local"  className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" />
+                                        </div>
+                                    </div> */}
+                                    <div className='col-md-3'>
+                                        <div className="form-group">
+                                        <label htmlFor="exampleInputEmail1">Select Employee:</label>
+                                        <select className="form-control" id="employee" name="employee" onChange={callEmployee} >
+                                            <option>Select</option>
+                                           {
+                                            employee.map((opts,i)=><option key={opts.emp_id}  value={opts.emp_first_name +' '+opts.emp_last_name}>{opts.emp_first_name +' '+opts.emp_last_name} </option>)
+                                           }
+                                        </select>
+                                        </div>
+                                    </div>
+                                    <div className='col-md-3 my-2'>
+                                       
+                                    </div>
+                                </div>
+                            </form>
+                                <div className='row'>
+                                    <div className="col-6">
+                                        <div className="card shadow mb-2">
+                                            <div className="card-body" id="mychart1" style={{height: '300px'}}>
+                                            <h6 style={{fontWeight:'bold'}}>Total Time</h6>
+                                                <div className="chart-area">
+                                                {/* <Doughnut  data={data21} style={{width:'200px',height:'200px'}} /> */}<br>
+                                                </br>
+                                                <br />
+                                                <br />
+                                                <br />
+                                                <br />
+
+                                                <h6 id="showtime" style={{fontSize: '35px',marginLeft: '40px'}}>00:00:00</h6>
+                                                </div>
+                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-6">
+                                    <div className="card shadow mb-2">
+                                            <div className="card-body" style={{height: '300px'}}>
+                                            <h6 style={{fontWeight:'bold'}}>Availability</h6>
+                                                <div className="chart-area">
+                                                <Doughnut  data={emp_availdaata}  style={{width:'200px',height:'200px'}} 
+                                              
+//                                                 plugins={[
+//       {
+//         beforeDraw(chart) {
+//          const { width } = chart;
+//          const { height } = chart;
+//          const { ctx } = chart;
+//          ctx.restore();
+//          const fontSize = (height / 160).toFixed(2);
+//          ctx.font = `${fontSize}em sans-serif`;
+//          ctx.textBaseline = 'top';
+//          const { text } = "23";
+//          const textX = Math.round((width - ctx.measureText(text).width) / 1.4);
+//          const textY = height / 1.9;
+//          ctx.fillText("40%", textX, textY);
+//          ctx.save();
+//        },
+//      },
+//    ]} 
+   />
+                                                 <h1 id="center" style={{marginTop:'-110px',fontSize:'24px',marginLeft:'90px',color:'black'}}></h1>
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-xl-6 col-lg-7">
+                        <div className="card shadow mb-4">
+                            <div className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 className="m-0 font-weight-bold text-primary"> TTE</h6>
+                                <div className="dropdown no-arrow">
+                                    <a className="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i className="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div className="card-body" style={{height: '440px'}}>
+                            <form>
+                                <div className='row'>
+                                    {/* <div className='col-md-5'>
+                                        <div className="form-group">
+                                            <label htmlFor="">Select Date:</label>
+                                            <input type="datetime-local"  className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" />
+                                        </div>
+                                    </div> */}
+                                    <div className='col-md-3'>
+                                        <div className="form-group">
+                                        
+                                       
+                                        </div>
+                                    </div>
+                                    <div className='col-md-3 my-2'>
+                                       
+                                    </div>
+                                </div>
+                            </form>
+                                <div className='row'>
+                                    <div className="col-6">
+                                        <div className="card shadow mb-2">
+                                            <div className="card-body" id="mychart1" style={{height: '300px'}}>
+                                            <h6 style={{fontWeight:'bold'}}>Total Count</h6>
+                                                <div className="chart-area">
+                                                {/* <Doughnut  data={data21} style={{width:'200px',height:'200px'}} /> */}<br>
+                                                </br>
+                                                <br />
+                                                <br />
+                                                <br />
+                                                <br />
+
+                                                <h6 id="showtime" style={{fontSize: '35px',marginLeft: '40px'}}>00</h6>
+                                                </div>
+                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-6">
+                                    <div className="card shadow mb-2">
+                                            <div className="card-body" style={{height: '300px'}}>
+                                            <h6 style={{fontWeight:'bold'}}>Fill TTE</h6>
+                                                <div className="chart-area">
+                                                <Doughnut  data={emp_ttefill}  style={{width:'200px',height:'200px'}} 
+                                              
+//                                                 plugins={[
+//       {
+//         beforeDraw(chart) {
+//          const { width } = chart;
+//          const { height } = chart;
+//          const { ctx } = chart;
+//          ctx.restore();
+//          const fontSize = (height / 160).toFixed(2);
+//          ctx.font = `${fontSize}em sans-serif`;
+//          ctx.textBaseline = 'top';
+//          const { text } = "23";
+//          const textX = Math.round((width - ctx.measureText(text).width) / 1.4);
+//          const textY = height / 1.9;
+//          ctx.fillText("40%", textX, textY);
+//          ctx.save();
+//        },
+//      },
+//    ]} 
+   />
+                                                 <h1 id="center" style={{marginTop:'-110px',fontSize:'24px',marginLeft:'90px',color:'black'}}></h1>
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* <!-- Pie Chart --> */}
+                   
+                </div>
+{/* 
+                <!-- Content Row --> */}
+                <div className="row">
+
+                    {/* <!-- Content Column --> */}
+                    <div className="col-lg-6 mb-4">
+                        {/* <!-- Color System --> */}
+                        <div className="row">
+                    
+                           
+                        </div>
+
+                    </div>
+
+                    <div className="col-lg-6 mb-4">
+
+                    </div>
+                </div>
+
+            </div>
+            {/* <!-- /.container-fluid --> */}
+
+        </div>
+        
+
+    </div>
+    {/* <!-- End of Content Wrapper --> */}
+
+</div>
+{/* <!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button--> */}
+<a className="scroll-to-top rounded" href="#page-top">
+    <i className="fas fa-angle-up"></i>
+</a>
+
+{/* <!-- Logout Modal--> */}
+<div className="modal fade a8" id="logoutModal" >
+    <div className="modal-dialog" role="document">
+        <div className="modal-content">
+            <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <button className="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div className="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div className="modal-footer">
+                <button className="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a className="btn btn-primary" href="login.html">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+{/* </body> */}
+    </div>
+  )
+}
+
+export default Dashboard
